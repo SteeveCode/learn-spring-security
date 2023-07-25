@@ -1,4 +1,4 @@
-package com.brexson.learnspringsecurity;
+package com.brexson.learnspringsecurity.resources;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
