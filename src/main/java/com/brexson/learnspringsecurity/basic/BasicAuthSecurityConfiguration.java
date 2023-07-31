@@ -34,5 +34,18 @@ public class BasicAuthSecurityConfiguration {
             }
         };
     }
+    @Bean
+    public UserDetailsService userDetailsService(){
+        var user = User.withUsername("in28ms")
+                .password("{noop}dummy")
+                .roles("USER")
+                .build();
+        var admin = User.withUsername("admin")
+                .password("{noop}dummy")
+                .roles("ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(user, admin);
+    }
 
 }
