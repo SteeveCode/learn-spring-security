@@ -1,17 +1,16 @@
-package com.brexson.learnspringsecurity.basic;
+package com.brexson.learnspringsecurity.jwt;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -21,16 +20,16 @@ import javax.sql.DataSource;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-//@Configuration
-public class BasicAuthSecurityConfiguration {
+@Configuration
+public class JwtSecurityConfiguration {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> {auth.anyRequest().authenticated();});
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        //http.formLogin();
         http.httpBasic(withDefaults());
         http.csrf(csrf -> csrf.disable());
         http.headers().frameOptions().sameOrigin(); // h2-console requires frame option permission
+        http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 
         return http.build();
     }
@@ -43,18 +42,7 @@ public class BasicAuthSecurityConfiguration {
             }
         };
     }
-//    @Bean
-//    public UserDetailsService userDetailsService(){
-//        var user = User.withUsername("in28ms")
-//                .password("{noop}dummy")
-//                .roles("USER")
-//                .build();
-//        var admin = User.withUsername("admin")
-//                .password("{noop}dummy")
-//                .roles("ADMIN")
-//                .build();
-//        return new InMemoryUserDetailsManager(user, admin);
-//    }
+
     @Bean // selects h2 as embedded datasource & also runs script to create Authorities & Users Schemas
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
